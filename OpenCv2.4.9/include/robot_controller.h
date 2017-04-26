@@ -15,9 +15,8 @@
 
 
 #define PI 3.14159265f
-
-
-#define UNITY_ENV	//Runs the program in unity simulation mode, comment this line for real robot application.
+#define UNITY_ENV			//Runs the program in unity simulation mode, comment this line for real robot application.
+#define CV_VIDEO_OUTPUT		//Show video output, comment this line for no video output
 
 class robot_controller
 {
@@ -39,11 +38,10 @@ private:
 	enum class Mode {capture, move };
 	Mode _mode;
 
-	bool _output;
-
-	
-
     float calc_dist (const cv::Mat & depth_map, const cv::Mat & diff_map);
+	float pixel_distance(float disparity);
+	float motion_distance(cv::Mat motion, cv::Mat disparity_map);
+
 	std::vector<cv::Mat> getChessImages();
 
     float _last_dist;
@@ -58,7 +56,8 @@ private:
 		const float FOCAL_LENGTH = 0.0035f;	//3.5mm
 		const float FIELD_OF_VIEW = 40;		//40 degrees
 		const float NEAR_PLANE_SIZE = FOCAL_LENGTH * tanf(FIELD_OF_VIEW * PI / 180.f);
-		float PIXEL_SIZE;	//To be determined at runtime
+		float PIXEL_WIDTH =0;	//To be determined at runtime
+		float PIXEL_HEIGHT = 0;	//To be determined at runtime
 	#else
 		//Real robot parameters
 		const float CAMERA_SPACING = 0.1f;	//10cm

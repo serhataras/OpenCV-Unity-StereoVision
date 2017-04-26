@@ -24,12 +24,11 @@ int main()
 	while (playing)
 	{
 		cv::Mat fullImage;
-		cerr << "Waiting for simulator output...\t";
+		//Wait for simulator output
 		do
 		{
 			fullImage = cv::imread(image_file, cv::IMREAD_COLOR);
 		} while ( fullImage.empty() );
-		cerr << "done" << endl;
 
 		remove(image_file.c_str());
 
@@ -39,6 +38,7 @@ int main()
 		cv::Mat left = fullImage( leftRoi);
 		cv::Mat right = fullImage(rightRoi);
 
+		//Run the robot controller 
 		rc.process(left, right, &vx, &vy, &omega);
 	}
 
