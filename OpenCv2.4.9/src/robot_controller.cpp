@@ -4,12 +4,6 @@ using namespace std;
 
 robot_controller::robot_controller() : _mode{ Mode::capture }, _last_dist(-1.0) {}
 
-float robot_controller::calc_dist(const cv::Mat & depth_map, const cv::Mat & diff_map)
-{
-	
-    return 0;
-}
-
 cv::Mat robot_controller::disparity(const cv::Mat & left_image, const cv::Mat & right_image)
 {
 	//Resize and copy the image
@@ -18,23 +12,6 @@ cv::Mat robot_controller::disparity(const cv::Mat & left_image, const cv::Mat & 
     cv::Mat left_image_cpy, right_image_cpy;
     cv::resize(left_image, left_image_cpy, cv::Size(), downSize,downSize);
     cv::resize(right_image, right_image_cpy, cv::Size(), downSize,downSize);
-
-
-    //On entre les paramètres pour la carte de disparité
-  /*cv::GaussianBlur(left_image_cpy, left_image_cpy, cv::Size(21,21),3);
-    cv::GaussianBlur(right_image_cpy, right_image_cpy, cv::Size(21,21),3);cv::StereoSGBM sgbm;
-    int sadSize = 5;
-    sgbm.SADWindowSize = 5;
-    sgbm.numberOfDisparities = 192;
-    sgbm.preFilterCap = 4;
-    sgbm.minDisparity = -52;
-    sgbm.uniquenessRatio = 5;
-    sgbm.speckleWindowSize = 150;
-    sgbm.speckleRange = 2;
-    sgbm.disp12MaxDiff = 10;
-    sgbm.fullDP = false;
-    sgbm.P1 = sadSize*sadSize*8*3;
-    sgbm.P2 = sadSize*sadSize*32*3;*/
 
 	//Set sBM parameters
 	cv::StereoBM sbm;
@@ -103,12 +80,11 @@ float robot_controller::motion_distance(cv::Mat motion, cv::Mat disparity_map)
 			{
 				float disparity = disparity_map.at<uchar>(cv::Point(x, y));
 				distance += pixel_distance(disparity);
+
 				++pixel_count;
 			}
 		}
 	}
-
-
 
 	if (pixel_count < 100)
 		return 0;
@@ -190,9 +166,11 @@ void robot_controller::process(const cv::Mat & left_img, const cv::Mat & right_i
 	}
 
 	Controller controller("D:/command.txt");
-	controller.skip();
+	controller.skip();	//Do nothing
 
-   /* float dist (calc_dist(left_img, right_img));     // Distance from the object.
+   /* Old command function not usable yet
+   
+   float dist (calc_dist(left_img, right_img));     // Distance from the object.
     // Case of the first call.
     if (_last_dist == -1)
     {

@@ -7,11 +7,16 @@
 
 using namespace std;
 
+#define AUTO_PILOT
+
+
+#ifdef AUTO_PILOT
+
 int main()
 {
-
 	cout << "starting simulation." << endl;
 
+	//Create the controller and the needed values
 	Controller controller("D:/command.txt");
 	string image_file = "D:/camera.png";
 	robot_controller rc;
@@ -19,7 +24,7 @@ int main()
 	bool playing = true;
 	float vx = 0, vy = 0, omega = 0;
 
-	controller.skip();
+	controller.skip();	//First step do nothing
 
 	while (playing)
 	{
@@ -28,14 +33,14 @@ int main()
 		do
 		{
 			fullImage = cv::imread(image_file, cv::IMREAD_COLOR);
-		} while ( fullImage.empty() );
+		} while (fullImage.empty());
 
 		remove(image_file.c_str());
 
 		//Crop the simulator output
-		cv::Rect leftRoi ( 0,					0, fullImage.cols/2, fullImage.rows);
-		cv::Rect rightRoi( fullImage.cols/2,	0, fullImage.cols/2, fullImage.rows);
-		cv::Mat left = fullImage( leftRoi);
+		cv::Rect leftRoi(0, 0, fullImage.cols / 2, fullImage.rows);
+		cv::Rect rightRoi(fullImage.cols / 2, 0, fullImage.cols / 2, fullImage.rows);
+		cv::Mat left = fullImage(leftRoi);
 		cv::Mat right = fullImage(rightRoi);
 
 		//Run the robot controller 
@@ -45,50 +50,15 @@ int main()
 	std::cout << "ending simulation." << std::endl;
 
 	return 0;
-
-
-	/*
-	std::string right_im = "img/damier_10cm/right_10.png";
-	std::string left_im = "img//damier_10cm//left_10.png";
-	std::string right_im2 = "img/damier_10cm/right_11.png";
-	std::string left_im2 = "img/damier_10cm/left_11.png";
-
-	float vx=0, vy=0, omega=0;
-
-	cv::Mat right = cv::imread(right_im, cv::IMREAD_COLOR);
-	if (right.empty()) {
-		std::cout << "Cannot read image file: " << right_im;
-		return 0;
-	}
-	cv::Mat left = cv::imread(left_im, cv::IMREAD_COLOR);
-	if (left.empty()) {
-		std::cout << "Cannot read image file: " << left_im;
-		return 0;
-	}
-
-	cv::Mat right2 = cv::imread(right_im2, cv::IMREAD_COLOR);
-	if (right2.empty()) {
-		std::cout << "Cannot read image file: " << right_im2;
-		return 0;
-	}
-	cv::Mat left2 = cv::imread(left_im2, cv::IMREAD_COLOR);
-	if (left2.empty()) {
-		std::cout << "Cannot read image file: " << left_im2;
-		return 0;
-	}
-
-	robot_controller rc;
-	rc.process(left, right, &vx, &vy, &omega);
-	rc.process(left2, right2, &vx, &vy, &omega);*/
-	return 0;
 }
 
-/*int main()
+#else// AUTO_PILOT
+
+int main()
 {
 	cout << "starting simulation." << endl;
 
-	
-
+	Controller controller("D:/command.txt");
 	std::string line;
 
 	bool playing = true;
@@ -113,4 +83,6 @@ int main()
 	}
 	std::cout << "ending simulation." << std::endl;
 	return 0;
-}*/
+}
+
+#endif // AUTO_PILOT

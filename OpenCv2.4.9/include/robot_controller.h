@@ -13,42 +13,35 @@
 #include <cmath>
 
 
-
-#define PI 3.14159265f
+#define PI 3.14159265f		//Pi 
 #define UNITY_ENV			//Runs the program in unity simulation mode, comment this line for real robot application.
 #define CV_VIDEO_OUTPUT		//Show video output, comment this line for no video output
 
+//Class used to control a Unity or a real robot using stereo vision.
 class robot_controller
 {
 public:
-  /// Use the provided left and right images to update the desired speed
-  /// - vx: speed forward [m/s]
-  /// - vy: lateral speed [m/s] (+ is left)
-  /// - omega: angular speed [rad/s] (+ is rotating to left)
-
-
-  virtual void process(const cv::Mat & left_img, const cv::Mat & right_img, float * vx, float * vy, float * omega);
-  robot_controller ();
-
-  cv::Mat disparity(const cv::Mat & left_image, const cv::Mat & right_image);
-  cv::Mat diff(const cv::Mat & image1, const cv::Mat & image2);
-  cv::Mat depthMap(cv::Mat disp);
+	robot_controller();
+	virtual void process(const cv::Mat & left_img, const cv::Mat & right_img, float * vx, float * vy, float * omega);
 
 private:
 	enum class Mode {capture, move };
 	Mode _mode;
 
-    float calc_dist (const cv::Mat & depth_map, const cv::Mat & diff_map);
-	float pixel_distance(float disparity);
-	float motion_distance(cv::Mat motion, cv::Mat disparity_map);
+	cv::Mat disparity(const cv::Mat & left_image, const cv::Mat & right_image);	//Returns a disparity map given two stereo images
+	cv::Mat diff(const cv::Mat & image1, const cv::Mat & image2);				//Returns the difference between two images (motion detection)
+	cv::Mat depthMap(cv::Mat disp);												//Returns a depth map given a disparity map
 
-	std::vector<cv::Mat> getChessImages();
+	float pixel_distance(float disparity);							//return a distance given a disparity value 
+	float motion_distance(cv::Mat motion, cv::Mat disparity_map);	//return a distance given a motion map and a disparity_map
 
-    float _last_dist;
-    float _last_speed;
+	std::vector<cv::Mat> getChessImages();		//Return a vector of chess images used for calibration
 
-    const float INITIAL_SPEED = 4.0;
-    const float DT = 0.5;
+    float _last_dist;		//distance on last step
+    float _last_speed;		//speed on last step
+
+    const float INITIAL_SPEED = 4.0;	//initial speed value
+    const float DT = 0.5;				//initial values
 
 	#ifdef UNITY_ENV
 		//Unity camera parameters
@@ -65,6 +58,7 @@ private:
 		const float PIXEL_SIZE = 0.00000375f;
 	#endif 
 
+	//Camera data from the last capture step
     cv::Mat disp_last;
 	cv::Mat leftG_img_last;
 	cv::Mat rightG_img_last;
